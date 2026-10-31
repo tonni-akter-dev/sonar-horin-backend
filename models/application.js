@@ -6,8 +6,8 @@ const applicationSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
     // Applicant Info
-    name: { type: String, required: true },
-    phone: { type: String, required: true },
+    name: { type: String,  },
+    phone: { type: String, },
     email: { type: String },
     fatherName: { type: String },
     motherName: { type: String },
@@ -40,7 +40,7 @@ const applicationSchema = new mongoose.Schema(
     },
 
     // 💡 Payment Info
-    amount: { type: Number, required: true },
+    amount: { type: Number },
     paymentMethod: { type: String },
     senderNumber: { type: String }, // নতুন: যে নাম্বার থেকে পেমেন্ট করেছে
     trxId: { type: String }, // নতুন: ট্রানজেকশন আইডি
