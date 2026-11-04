@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
+    // 💡 অ্যাডমিন ব্লক করলে লগইন ও API ব্যবহার করতে পারবে না
+    isBlocked: { type: Boolean, default: false },
 
     // 💡 নতুন প্রোফাইল ফিল্ডসমূহ
     fatherName: { type: String, default: "" },

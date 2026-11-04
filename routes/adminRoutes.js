@@ -1,12 +1,12 @@
 import express from 'express';
 import Application from '../models/application.js';
-// import { protect, admin } from '../middleware/authMiddleware.js'; // অ্যাডমিন প্রোটেকশনের জন্য
+import { protect, admin } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // @route   GET /api/admin/applications
 // @desc    সব আবেদন দেখা (ফিল্টার ও সার্চ সহ)
-router.get('/applications', /* protect, admin, */ async (req, res) => {
+router.get('/applications', protect, admin, async (req, res) => {
   try {
     const { status, search } = req.query;
     let query = {};
@@ -29,7 +29,7 @@ router.get('/applications', /* protect, admin, */ async (req, res) => {
 
 // @route   PUT /api/admin/applications/:id
 // @desc    আবেদনের স্ট্যাটাস বা টাইমলাইন আপডেট করা
-router.put('/applications/:id', /* protect, admin, */ async (req, res) => {
+router.put('/applications/:id',protect, admin,  async (req, res) => {
   try {
     const { status, timeline, paymentStatus, teletalkUser, teletalkPass } = req.body;
     
@@ -48,7 +48,7 @@ router.put('/applications/:id', /* protect, admin, */ async (req, res) => {
 
 // @route   GET /api/admin/stats
 // @desc    ড্যাশবোর্ডের পরিসংখ্যান (KPI Cards)
-router.get('/stats', /* protect, admin, */ async (req, res) => {
+router.get('/stats',  protect, admin, async (req, res) => {
   try {
     const total = await Application.countDocuments();
     const pending = await Application.countDocuments({ status: 'pending' });

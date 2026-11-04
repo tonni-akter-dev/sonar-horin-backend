@@ -62,6 +62,11 @@ router.post("/login", async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ msg: "ভুল ইমেইল বা পাসওয়ার্ড" });
 
+    // 💡 ব্লক করা অ্যাকাউন্ট লগইন করতে পারবে না
+    if (user.isBlocked) {
+      return res.status(403).json({ msg: "আপনার অ্যাকাউন্ট সাময়িকভাবে বন্ধ আছে। সহায়তার জন্য যোগাযোগ করুন।" });
+    }
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -167,6 +172,40 @@ router.put("/me", protect, upload.array("files", 10), async (req, res) => {
     }
   } catch (err) {
     console.error("Update Profile Error:", err);
+    res.status(500).json({ msg: "সার্ভার এরর" });
+  }
+});
+
+// @route   PUT /api/v1/auth/change-password
+// @desc    লগইন করা ইউজার/অ্যাডমিনের পাসওয়ার্ড পরিবর্তন
+router.put("/change-password", protect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ msg: "বর্তমান ও নতুন পাসওয়ার্ড দিন" });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ msg: "নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে" });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ msg: "ইউজার পাওয়া যায়নি" });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: "বর্তমান পাসওয়ার্ড সঠিক নয়" });
+    }
+    if (await bcrypt.compare(newPassword, user.password)) {
+      return res.status(400).json({ msg: "নতুন পাসওয়ার্ড আগেরটার মতো হতে পারবে না" });
+    }
+
+    user.password = newPassword; // pre("save") hook নিজেই hash করবে
+    await user.save();
+
+    res.json({ msg: "পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে" });
+  } catch (err) {
+    console.error("Change Password Error:", err);
     res.status(500).json({ msg: "সার্ভার এরর" });
   }
 });

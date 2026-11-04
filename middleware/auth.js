@@ -16,6 +16,10 @@ export const protect = async (req, res, next) => {
       if (!req.user) {
         return res.status(401).json({ msg: "ইউজার পাওয়া যায়নি" });
       }
+      // 💡 ব্লক করা অ্যাকাউন্ট
+      if (req.user.isBlocked) {
+        return res.status(403).json({ msg: "আপনার অ্যাকাউন্ট সাময়িকভাবে বন্ধ আছে। সহায়তার জন্য যোগাযোগ করুন।" });
+      }
       next();
     } catch (error) {
       console.error(error);

@@ -11,6 +11,7 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import settingRoutes from './routes/settingRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 
 
 dotenv.config();
@@ -31,6 +32,7 @@ app.use('/api/v1/upload', uploadRoutes)
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/settings', settingRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
 
 
 
